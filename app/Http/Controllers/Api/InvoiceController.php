@@ -17,7 +17,7 @@ class InvoiceController extends Controller
     public function index(Request $request): JsonResponse
     {
         // Eager Loading bertingkat untuk mengambil data relasi sampai ke ujung
-        $query = Invoice::with(['subscription.user', 'subscription.service']);
+        $query = Invoice::with(['subscription.customer', 'subscription.service']);
 
         // Filter berdasarkan status pembayaran jika ada (?payment_status=unpaid)
         if ($request->has('payment_status')) {
@@ -58,7 +58,7 @@ class InvoiceController extends Controller
         ]);
 
         // Muat data relasi penuh untuk respon JSON ke Postman
-        $invoice->load(['subscription.user', 'subscription.service']);
+        $invoice->load(['subscription.customer', 'subscription.service']);
 
         return response()->json([
             'success' => true,
@@ -72,7 +72,7 @@ class InvoiceController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $invoice = Invoice::with(['subscription.user', 'subscription.service'])->find($id);
+        $invoice = Invoice::with(['subscription.customer', 'subscription.service'])->find($id);
 
         if (!$invoice) {
             return response()->json([
@@ -115,7 +115,7 @@ class InvoiceController extends Controller
         }
 
         $invoice->update($validated);
-        $invoice->load(['subscription.user', 'subscription.service']);
+        $invoice->load(['subscription.customer', 'subscription.service']);
 
         return response()->json([
             'success' => true,

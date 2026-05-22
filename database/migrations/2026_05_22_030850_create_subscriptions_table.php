@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
             
-            // Foreign Key yang menghubungkan ke tabel users dan services
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            // Foreign Key yang menghubungkan ke tabel customers dan services
+            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->foreignId('service_id')->constrained()->cascadeOnDelete();
             
             // Kolom pendukung data langganan
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('status')->default('active'); // active, expired, cancelled
+            $table->string('status')->default('active'); // active, inactive, trial, isolir, dismantle
             
             $table->timestamps();
         });

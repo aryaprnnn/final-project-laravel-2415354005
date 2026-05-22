@@ -16,11 +16,11 @@ class SubscriptionController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Subscription::with(['user', 'service']);
+        $query = Subscription::with(['customer', 'service']);
 
-        // Filter berdasarkan User ID jika ada (?user_id=1)
-        if ($request->has('user_id')) {
-            $query->where('user_id', $request->query('user_id'));
+        // Filter berdasarkan Customer ID jika ada (?customer_id=1)
+        if ($request->has('customer_id')) {
+            $query->where('customer_id', $request->query('customer_id'));
         }
 
         // Filter berdasarkan Service ID jika ada (?service_id=2)
@@ -50,18 +50,18 @@ class SubscriptionController extends Controller
     {
         // Proses Validasi Aturan Transaksi
         $validated = $request->validate([
-            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'customer_id' => ['required', 'integer', 'exists:customers,id'],
             'service_id' => ['required', 'integer', 'exists:services,id'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'status' => ['nullable', 'string', 'in:active,expired,cancelled'],
+            'status' => ['nullable', 'string', 'in:active,inactive,trial,isolir,dismantle'],
         ]);
 
         // Menyimpan Transaksi Langganan ke Database
         $subscription = Subscription::create($validated);
 
-        // Eager Loading otomatis agar respon JSON langsung menampilkan data detail User & Service
-        $subscription->load(['user', 'service']);
+        // Eager Loading otomatis agar respon JSON langsung menampilkan data detail Customer & Service
+        $subscription->load(['customer', 'service']);
 
         // Mengembalikan Respon Sukses (HTTP Status 201 Created)
         return response()->json([
@@ -76,8 +76,8 @@ class SubscriptionController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        // Mencari data langganan sekaligus mengangkut data relasi user dan service
-        $subscription = Subscription::with(['user', 'service'])->find($id);
+        // Mencari data langganan sekaligus mengangkut data relasi customer dan service
+        $subscription = Subscription::with(['customer', 'service'])->find($id);
 
         // Kondisi jika ID transaksi tidak ditemukan (HTTP Status 404)
         if (!$subscription) {
@@ -110,18 +110,18 @@ class SubscriptionController extends Controller
 
         // Proses validasi data baru (menggunakan rule 'sometimes')
         $validated = $request->validate([
-            'user_id' => ['sometimes', 'required', 'integer', 'exists:users,id'],
+            'customer_id' => ['sometimes', 'required', 'integer', 'exists:customers,id'],
             'service_id' => ['sometimes', 'required', 'integer', 'exists:services,id'],
             'start_date' => ['sometimes', 'required', 'date'],
             'end_date' => ['sometimes', 'required', 'date', 'after_or_equal:start_date'],
-            'status' => ['sometimes', 'required', 'string', 'in:active,expired,cancelled'],
+            'status' => ['sometimes', 'required', 'string', 'in:active,inactive,trial,isolir,dismantle'],
         ]);
 
         // Eksekusi pembaruan data ke database
         $subscription->update($validated);
 
         // Muat ulang data relasi terbaru agar respon JSON sinkron
-        $subscription->load(['user', 'service']);
+        $subscription->load(['customer', 'service']);
 
         return response()->json([
             'success' => true,

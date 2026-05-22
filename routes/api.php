@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\InvoiceController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\SubscriptionController;
@@ -24,7 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Fitur Logout
     Route::post('logout', [AuthController::class, 'logout']);
 
-    // Core ERP API Module (Service, Subscription, Invoice)
+    // Core ERP API Module (Customer, Service, Subscription, Invoice)
+    Route::apiResource('customers', CustomerController::class);
     Route::apiResource('services', ServiceController::class);
     Route::apiResource('subscriptions', SubscriptionController::class);
     Route::apiResource('invoices', InvoiceController::class);

@@ -11,7 +11,7 @@ class Subscription extends Model
 {
     // Mendaftarkan kolom yang boleh diisi secara massal
     protected $fillable = [
-        'user_id',
+        'customer_id',
         'service_id',
         'start_date',
         'end_date',
@@ -28,11 +28,11 @@ class Subscription extends Model
     }
 
     /**
-     * Relasi: Setiap langganan pasti dimiliki oleh satu User
+     * Relasi: Setiap langganan pasti dimiliki oleh satu Customer
      */
-    public function user(): BelongsTo
+    public function customer()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Customer::class);
     }
 
     /**

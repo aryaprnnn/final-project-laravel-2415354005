@@ -42,4 +42,12 @@ class Subscription extends Model
     {
         return $this->belongsTo(Service::class);
     }
+
+    /**
+     * Relasi: Satu Subscription bisa memiliki banyak Invoice (Tagihan)
+     */
+    public function invoices(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
 }

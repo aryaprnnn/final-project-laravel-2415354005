@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\ServiceController;
+use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
-// Mendaftarkan satu resource route untuk API CRUD Service secara otomatis
 Route::apiResource('services', ServiceController::class);
+Route::apiResource('subscriptions', SubscriptionController::class);

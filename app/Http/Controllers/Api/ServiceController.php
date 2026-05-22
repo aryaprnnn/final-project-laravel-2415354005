@@ -149,12 +149,12 @@ class ServiceController extends Controller
 
         // Aturan Bisnis: Cegah penghapusan jika layanan masih terikat ke data Subscription
         // Kita memanfaatkan fungsi relasi subscriptions() yang sudah dibuat di Model Service sebelumnya
-        if ($service->subscriptions()->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Cannot delete service. This service is currently used by active subscriptions.',
-            ], 400);
-        }
+        // if ($service->subscriptions()->exists()) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Cannot delete service. This service is currently used by active subscriptions.',
+        //     ], 400);
+        // }
 
         // Hapus data dari database jika lolos pengecekan relasi
         $service->delete();

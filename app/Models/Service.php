@@ -9,10 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
 {
-    // Properti mass assignment 
     protected $fillable = ['name', 'price', 'description', 'status'];
 
-    // Konversi tipe data otomatis 
     protected function casts(): array
     {
         return [
@@ -21,9 +19,6 @@ class Service extends Model
         ];
     }
 
-    /**
-     * Relasi ke model Subscription
-     */
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);

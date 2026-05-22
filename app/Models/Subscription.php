@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Subscription extends Model
 {
-    // Mendaftarkan kolom yang boleh diisi secara massal
     protected $fillable = [
         'customer_id',
         'service_id',
@@ -18,7 +17,6 @@ class Subscription extends Model
         'status'
     ];
 
-    // Mengonversi tipe data kolom secara otomatis
     protected function casts(): array
     {
         return [
@@ -27,25 +25,16 @@ class Subscription extends Model
         ];
     }
 
-    /**
-     * Relasi: Setiap langganan pasti dimiliki oleh satu Customer
-     */
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
 
-    /**
-     * Relasi: Setiap langganan pasti terikat pada satu Service (Layanan)
-     */
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
     }
 
-    /**
-     * Relasi: Satu Subscription bisa memiliki banyak Invoice (Tagihan)
-     */
     public function invoices(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Invoice::class);

@@ -10,19 +10,14 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // 1. Create a Default Admin User for Login
         User::factory()->create([
             'name' => 'Admin ERP',
             'email' => 'admin@erp.com',
             'password' => bcrypt('password123'),
         ]);
 
-        // 2. Create Dummy Customers
         $customer1 = Customer::create([
             'customer_id' => 'CUST-001',
             'name' => 'Budi Santoso',
@@ -41,7 +36,6 @@ class DatabaseSeeder extends Seeder
             'status' => true,
         ]);
 
-        // 3. Create Dummy Services
         $service1 = Service::create([
             'name' => 'Internet Fiber 50Mbps',
             'price' => 350000,
@@ -63,7 +57,6 @@ class DatabaseSeeder extends Seeder
             'status' => true,
         ]);
 
-        // 4. Create Dummy Subscriptions
         Subscription::create([
             'customer_id' => $customer1->id,
             'service_id' => $service1->id,

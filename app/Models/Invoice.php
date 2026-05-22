@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Invoice extends Model
 {
-    // Mendaftarkan kolom yang boleh diisi secara massal
     protected $fillable = [
         'subscription_id',
         'invoice_number',
@@ -18,7 +17,6 @@ class Invoice extends Model
         'paid_at'
     ];
 
-    // Mengonversi kolom paid_at menjadi tipe data DateTime otomatis
     protected function casts(): array
     {
         return [
@@ -26,9 +24,6 @@ class Invoice extends Model
         ];
     }
 
-    /**
-     * Relasi: Setiap invoice pasti terikat pada satu transaksi Subscription
-     */
     public function subscription(): BelongsTo
     {
         return $this->belongsTo(Subscription::class);

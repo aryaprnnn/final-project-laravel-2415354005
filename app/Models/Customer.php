@@ -18,9 +18,6 @@ class Customer extends Model
         'status'
     ];
 
-    /**
-     * Konversi tipe data otomatis
-     */
     protected function casts(): array
     {
         return [
@@ -28,9 +25,6 @@ class Customer extends Model
         ];
     }
 
-    /**
-     * Satu customer dapat memiliki banyak subscription.
-     */
     public function subscriptions(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Subscription::class);

@@ -7,25 +7,13 @@ use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Public Routes (Bisa diakses tanpa token)
-|--------------------------------------------------------------------------
-*/
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
-/*
-|--------------------------------------------------------------------------
-| Protected Routes (Wajib membawa Bearer Token untuk mengaksesnya)
-|--------------------------------------------------------------------------
-*/
 Route::middleware('auth:sanctum')->group(function () {
     
-    // Fitur Logout
     Route::post('logout', [AuthController::class, 'logout']);
 
-    // Core ERP API Module (Customer, Service, Subscription, Invoice)
     Route::apiResource('customers', CustomerController::class);
     Route::apiResource('services', ServiceController::class);
     Route::apiResource('subscriptions', SubscriptionController::class);

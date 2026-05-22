@@ -12,9 +12,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Fitur Register User Baru via API
-     */
     public function register(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -23,14 +20,12 @@ class AuthController extends Controller
             'password' => ['required', 'string', 'min:8'],
         ]);
 
-        // Create user baru dengan password yang di-enkripsi (bcrypt) otomatis
         $user = User::create([
             'name'     => $validated['name'],
             'email'    => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
 
-        // Generate token Sanctum langsung setelah register sukses
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -41,9 +36,6 @@ class AuthController extends Controller
         ], 201);
     }
 
-    /**
-     * Fitur Login User & Pengambilan Token Security
-     */
     public function login(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -51,10 +43,8 @@ class AuthController extends Controller
             'password' => ['required', 'string'],
         ]);
 
-        // Cari user berdasarkan email
         $user = User::where('email', $validated['email'])->first();
 
-        // Validasi: Jika user tidak ditemukan atau password salah
         if (!$user || !Hash::check($validated['password'], $user->password)) {
             return response()->json([
                 'success' => false,
@@ -62,7 +52,6 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // Hapus token lama jika ada, lalu terbitkan token baru
         $user->tokens()->delete();
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -74,12 +63,8 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Fitur Logout (Menghapus Token Aktif)
-     */
     public function logout(Request $request): JsonResponse
     {
-        // Menghapus token yang sedang digunakan untuk request ini
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([

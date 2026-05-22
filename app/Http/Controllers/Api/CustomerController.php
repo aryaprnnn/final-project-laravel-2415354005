@@ -11,9 +11,6 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    /**
-     * Menampilkan daftar semua pelanggan
-     */
     public function index(Request $request): JsonResponse
     {
         $status = $request->query('status');
@@ -32,9 +29,6 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Menyimpan data pelanggan baru
-     */
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -55,9 +49,6 @@ class CustomerController extends Controller
         ], 201);
     }
 
-    /**
-     * Menampilkan detail data pelanggan
-     */
     public function show(string $id): JsonResponse
     {
         $customer = Customer::with('subscriptions.service')->find($id);
@@ -76,9 +67,6 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Memperbarui data pelanggan
-     */
     public function update(Request $request, string $id): JsonResponse
     {
         $customer = Customer::find($id);
@@ -108,9 +96,6 @@ class CustomerController extends Controller
         ]);
     }
 
-    /**
-     * Menghapus data pelanggan
-     */
     public function destroy(string $id): JsonResponse
     {
         $customer = Customer::find($id);

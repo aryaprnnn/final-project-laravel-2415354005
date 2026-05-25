@@ -8,17 +8,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ServiceController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $status = $request->query('status');
 
         $query = Service::query();
 
         if ($status !== null) {
-            if (!in_array($status, ['active', 'inactive'], true)) {
+            if ($request->wantsJson() && !in_array($status, ['active', 'inactive'], true)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
@@ -31,13 +32,17 @@ class ServiceController extends Controller
             $query->where('status', $status === 'active');
         }
 
-        $services = $query->latest()->get();
+        if ($request->wantsJson()) {
+            $services = $query->latest()->get();
+            return response()->json([
+                'success' => true,
+                'message' => 'Services retrieved successfully',
+                'data' => $services,
+            ]);
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Services retrieved successfully',
-            'data' => $services,
-        ]);
+        $services = $query->latest()->paginate(20);
+        return view('services', compact('services'));
     }
 
     public function store(Request $request): JsonResponse

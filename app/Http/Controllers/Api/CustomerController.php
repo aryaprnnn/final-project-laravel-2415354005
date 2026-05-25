@@ -8,25 +8,38 @@ use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $status = $request->query('status');
+        $showDeleted = $request->query('deleted', 'hide');
+        
         $query = Customer::query();
+
+        if ($showDeleted === 'only') {
+            $query->onlyTrashed();
+        } elseif ($showDeleted === 'show') {
+            $query->withTrashed();
+        }
 
         if ($status !== null) {
             $query->where('status', $status === 'active');
         }
 
-        $customers = $query->latest()->get();
+        if ($request->wantsJson()) {
+            $customers = $query->latest()->get();
+            return response()->json([
+                'success' => true,
+                'message' => 'Customers retrieved successfully',
+                'data' => $customers,
+            ]);
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Customers retrieved successfully',
-            'data' => $customers,
-        ]);
+        $customers = $query->latest()->paginate(20);
+        return view('customers', compact('customers'));
     }
 
     public function store(Request $request): JsonResponse
@@ -107,11 +120,71 @@ class CustomerController extends Controller
             ], 404);
         }
 
+        // Soft delete will handle this safely without breaking relationships
         $customer->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'Customer deleted successfully',
+            'message' => 'Customer has been archived (Soft Delete)',
+        ]);
+    }
+
+    public function restore(string $id): JsonResponse
+    {
+        $customer = Customer::withTrashed()->find($id);
+
+        if (!$customer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer not found',
+            ], 404);
+        }
+
+        $customer->restore();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer restored successfully',
+        ]);
+    }
+
+    public function activate(string $id): JsonResponse
+    {
+        $customer = Customer::find($id);
+
+        if (!$customer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer not found',
+            ], 404);
+        }
+
+        $customer->update(['status' => true]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer activated successfully',
+            'data' => $customer,
+        ]);
+    }
+
+    public function deactivate(string $id): JsonResponse
+    {
+        $customer = Customer::find($id);
+
+        if (!$customer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Customer not found',
+            ], 404);
+        }
+
+        $customer->update(['status' => false]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Customer deactivated successfully',
+            'data' => $customer,
         ]);
     }
 }

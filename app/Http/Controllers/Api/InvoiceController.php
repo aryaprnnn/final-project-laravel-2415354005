@@ -8,10 +8,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Invoice;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class InvoiceController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $query = Invoice::with(['subscription.customer', 'subscription.service']);
 
@@ -19,13 +20,17 @@ class InvoiceController extends Controller
             $query->where('payment_status', $request->query('payment_status'));
         }
 
-        $invoices = $query->latest()->get();
+        if ($request->wantsJson()) {
+            $invoices = $query->latest()->get();
+            return response()->json([
+                'success' => true,
+                'message' => 'Invoices retrieved successfully',
+                'data' => $invoices,
+            ]);
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Invoices retrieved successfully',
-            'data' => $invoices,
-        ]);
+        $invoices = $query->latest()->paginate(20);
+        return view('invoices', compact('invoices'));
     }
 
     public function store(Request $request): JsonResponse

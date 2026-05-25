@@ -14,6 +14,8 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::post('logout', [AuthController::class, 'logout']);
 
+    Route::post('customers/{id}/activate', [CustomerController::class, 'activate']);
+    Route::post('customers/{id}/restore', [CustomerController::class, 'restore']);
     Route::apiResource('customers', CustomerController::class);
     Route::apiResource('services', ServiceController::class);
     Route::apiResource('subscriptions', SubscriptionController::class);
